@@ -20,6 +20,41 @@ export class GoodsService {
     return this.repository.findOne(id);
   }
 
+  async findAllPublic(categoryId, query): Promise<any> {
+    const take = query.per_page || 10;
+    const skip = (Number(query.page) - 1) * take || 0;
+
+    const where = { categoryId } as any;
+
+    if (query.filter) {
+      const filter = JSON.parse(query.filter);
+
+      if (filter.name_ro) {
+        where.name_ro = ILike(`%${filter.name_ro.toLowerCase()}%`);
+      }
+
+      if (filter.name_en) {
+        where.name_en = ILike(`%${filter.name_en.toLowerCase()}%`);
+      }
+
+      if (filter.name_ru) {
+        where.name_ru = ILike(`%${filter.name_ru.toLowerCase()}%`);
+      }
+    }
+
+    const [result, total] = await this.repository.findAndCount({
+      take: take,
+      skip: skip,
+      where,
+    });
+
+    return {
+      total,
+      items: result,
+      page: query.page,
+    };
+  }
+
   async findAll(query): Promise<any> {
     const take = query.per_page || 10;
     const skip = (Number(query.page) - 1) * take || 0;

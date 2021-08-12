@@ -73,6 +73,13 @@ export class CategoriesController {
   @ApiResponse({ status: 200, type: Categories })
   @Get('public/list')
   @Public()
+  publicList() {
+    return this.categoriesService.publicList();
+  }
+
+  @ApiOperation({ summary: 'Get categories' })
+  @ApiResponse({ status: 200, type: Categories })
+  @Get('list')
   list() {
     return this.categoriesService.list();
   }

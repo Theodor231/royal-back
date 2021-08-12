@@ -27,6 +27,14 @@ export class CategoriesService {
     return items.map((item: any) => ({
       value: item.id,
       text: item[`name_${this.languageService.activeLanguage}`],
+    }));
+  }
+
+  async publicList() {
+    const items = await this.repository.find();
+    return items.map((item: any) => ({
+      value: item.id,
+      text: item[`name_${this.languageService.activeLanguage}`],
       image_url: item.image.url,
     }));
   }

@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Categories } from 'src/modules/categories/entities/categories.entity';
 
 @Entity({ name: 'goods' })
 export class Goods {
@@ -59,4 +66,12 @@ export class Goods {
   @ApiProperty({ example: '12', description: 'Goods description_ru' })
   @Column()
   description_ru: string;
+
+  @ApiProperty({ example: '1', description: 'Категория' })
+  @ManyToOne(() => Categories, { eager: true })
+  @JoinColumn()
+  category: Categories;
+
+  @Column({ nullable: true })
+  categoryId: number;
 }

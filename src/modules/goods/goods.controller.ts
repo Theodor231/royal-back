@@ -42,6 +42,15 @@ export class GoodsController {
   async findAll(@Query() query): Promise<Pagination<Goods>> {
     return this.goodsService.findAll(query);
   }
+  @ApiOperation({ summary: 'Get all goods' })
+  @ApiResponse({ status: 200, type: [Goods] })
+  @Get('public/:categoryId')
+  async findAllPublic(
+    @Param('categoryId') categoryId,
+    @Query() query,
+  ): Promise<Pagination<Goods>> {
+    return this.goodsService.findAllPublic(categoryId, query);
+  }
 
   @ApiOperation({ summary: 'Get goods' })
   @ApiResponse({ status: 200, type: Goods })
