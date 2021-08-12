@@ -7,9 +7,17 @@ export class Goods {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: 'Goods', description: 'Goods description' })
+  @ApiProperty({ example: 'Categories', description: 'Categories description' })
   @Column()
-  name: string;
+  name_ro: string;
+
+  @ApiProperty({ example: 'Categories', description: 'Categories description' })
+  @Column()
+  name_en: string;
+
+  @ApiProperty({ example: 'Categories', description: 'Categories description' })
+  @Column()
+  name_ru: string;
 
   @ApiProperty({ example: 'File(binary)', description: 'Image' })
   @Column({
@@ -20,15 +28,35 @@ export class Goods {
   })
   image: any;
 
-
   @ApiProperty({ example: '123', description: 'Goods price' })
   @Column()
   price: number;
-
 
   @ApiProperty({ example: '12', description: 'Goods discount' })
   @Column()
   discount: number;
 
+  @ApiProperty({ example: '12', description: 'Goods height' })
+  @Column()
+  height: number;
 
+  @ApiProperty({ example: '12', description: 'Goods width' })
+  @Column()
+  width: number;
+
+  @ApiProperty({ example: '12', description: 'Goods length' })
+  @Column()
+  length: number;
+
+  @ApiProperty({ example: '12', description: 'Goods description_ro' })
+  @Column()
+  description_ro: string;
+
+  @ApiProperty({ example: '12', description: 'Goods description_en' })
+  @Column()
+  description_en: string;
+
+  @ApiProperty({ example: '12', description: 'Goods description_ru' })
+  @Column()
+  description_ru: string;
 }

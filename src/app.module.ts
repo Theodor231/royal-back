@@ -13,6 +13,7 @@ import { PermissionsService } from './services/permissions.service';
 import { LocalizationService } from './services/localization.service';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { GoodsModule } from './modules/goods/goods.module';
+import { SettingsMiddleware } from './middleware/settings.middleware';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { GoodsModule } from './modules/goods/goods.module';
     RolesModule,
     UsersModule,
     AuthModule,
+
     PassportModule.register({
       defaultStrategy: 'jwt',
       property: 'user',
@@ -37,13 +39,16 @@ import { GoodsModule } from './modules/goods/goods.module';
     GoodsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PermissionsService],
+  providers: [AppService, PermissionsService, LocalizationService],
+  exports: [LocalizationService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
+      .apply(SettingsMiddleware)
+      .forRoutes('*')
       .apply(AuthMiddleware)
-      .exclude('auth/(.*)', 'storage/(.*)')
+      .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)')
       .forRoutes('*');
   }
 }

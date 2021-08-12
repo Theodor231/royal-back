@@ -10,7 +10,7 @@ export class GoodsService {
   constructor(
     @InjectRepository(Goods)
     private repository: Repository<Goods>,
-  ) { }
+  ) {}
   create(createGoodsDto: CreateGoodsDto) {
     const goods = this.repository.create(createGoodsDto);
     return this.repository.save(goods);
@@ -27,19 +27,29 @@ export class GoodsService {
     const where = {} as any;
     const filter = JSON.parse(query.filter);
 
-    if (filter.name) {
-      where.name = ILike(`%${filter.name.toLowerCase()}%`);
+    if (filter.name_ro) {
+      where.name_ro = ILike(`%${filter.name_ro.toLowerCase()}%`);
+    }
+
+    if (filter.name_en) {
+      where.name_en = ILike(`%${filter.name_en.toLowerCase()}%`);
+    }
+
+    if (filter.name_ru) {
+      where.name_ru = ILike(`%${filter.name_ru.toLowerCase()}%`);
     }
 
     const [result, total] = await this.repository.findAndCount({
       take: take,
       skip: skip,
-      where
+      where,
     });
 
     const headers = [
       { value: 'id', text: 'ID' },
-      { value: 'name', text: 'Name' },
+      { value: 'name_ro', text: 'Name RO' },
+      { value: 'name_en', text: 'Name EN' },
+      { value: 'name_ru', text: 'Name RU' },
       { value: 'image', text: 'Image' },
       { value: 'price', text: 'Price' },
       { value: 'discount', text: 'Discount' },
@@ -54,7 +64,7 @@ export class GoodsService {
   }
 
   async update(id: number, updateGoodsDto: UpdateGoodsDto) {
-    const item: any = await this.repository.findOne(+id);
+    await this.repository.findOne(+id);
     await this.repository.update(
       +id,
       JSON.parse(JSON.stringify(updateGoodsDto)),

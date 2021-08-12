@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   Query,
-  UploadedFile
+  UploadedFile,
 } from '@nestjs/common';
 import { GoodsService } from './goods.service';
 import { CreateGoodsDto } from './dto/create-goods.dto';
@@ -20,7 +20,7 @@ import { SaveFile } from 'src/helpers/decorators';
 @ApiTags('Goods')
 @Controller('goods')
 export class GoodsController {
-  constructor(private readonly goodsService: GoodsService) { }
+  constructor(private readonly goodsService: GoodsService) {}
 
   @ApiOperation({ summary: 'create goods' })
   @ApiResponse({ status: 201, type: Goods })

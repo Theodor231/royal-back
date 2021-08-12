@@ -12,7 +12,7 @@ export class RolesService {
     @InjectRepository(Role)
     private repository: Repository<Role>,
     private connection: Connection,
-  ) { }
+  ) {}
 
   async create(createRoleDto: CreateRoleDto) {
     const role = this.repository.create(createRoleDto);
@@ -44,7 +44,7 @@ export class RolesService {
     const [result, total] = await this.repository.findAndCount({
       take: take,
       skip: skip,
-      where
+      where,
     });
 
     const headers = [

@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private repository: Repository<User>,
-  ) { }
+  ) {}
   create(createUserDto: CreateUserDto) {
     const user = this.repository.create(createUserDto);
     return this.repository.save(user);
@@ -28,7 +28,7 @@ export class UsersService {
     const skip = (Number(query.page) - 1) * take || 0;
 
     const where = {} as any;
-    const filter = JSON.parse(query.filter)
+    const filter = JSON.parse(query.filter);
 
     if (filter.name) {
       where.name = ILike(`%${filter.name.toLowerCase()}%`);
@@ -45,7 +45,7 @@ export class UsersService {
     const [result, total] = await this.repository.findAndCount({
       take: take,
       skip: skip,
-      where
+      where,
     });
 
     const headers = [

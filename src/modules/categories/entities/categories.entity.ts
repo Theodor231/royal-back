@@ -9,7 +9,15 @@ export class Categories {
 
   @ApiProperty({ example: 'Categories', description: 'Categories description' })
   @Column()
-  name: string;
+  name_ro: string;
+
+  @ApiProperty({ example: 'Categories', description: 'Categories description' })
+  @Column()
+  name_en: string;
+
+  @ApiProperty({ example: 'Categories', description: 'Categories description' })
+  @Column()
+  name_ru: string;
 
   @ApiProperty({ example: 'File(binary)', description: 'Аватар' })
   @Column({

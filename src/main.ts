@@ -29,8 +29,8 @@ async function bootstrap() {
       transform: false,
       exceptionFactory: (error) => {
         return new UnprocessableEntityException({
-         errors: parseErrors(error),
-         message: "Was given invalid data."
+          errors: parseErrors(error),
+          message: 'Was given invalid data.',
         });
       },
     }),
