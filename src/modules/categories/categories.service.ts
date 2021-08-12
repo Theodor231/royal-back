@@ -27,6 +27,7 @@ export class CategoriesService {
     return items.map((item: any) => ({
       value: item.id,
       text: item[`name_${this.languageService.activeLanguage}`],
+      image_url: item.image.url,
     }));
   }
 
