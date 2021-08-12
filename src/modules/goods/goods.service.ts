@@ -4,12 +4,14 @@ import { UpdateGoodsDto } from './dto/update-goods.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Goods } from './entities/goods.entity';
+import { LocalizationService } from '../../services/localization.service';
 
 @Injectable()
 export class GoodsService {
   constructor(
     @InjectRepository(Goods)
     private repository: Repository<Goods>,
+    private localizationService: LocalizationService,
   ) {}
   create(createGoodsDto: CreateGoodsDto) {
     const goods = this.repository.create(createGoodsDto);
@@ -50,7 +52,18 @@ export class GoodsService {
 
     return {
       total,
-      items: result,
+      items: result.map((item: any) => ({
+        name: item[`name_${this.localizationService.activeLanguage}`],
+        description:
+          item[`description_${this.localizationService.activeLanguage}`],
+        price: item.price,
+        discount: item.discount,
+        width: item.width,
+        height: item.height,
+        length: item.length,
+        categoryId: item.categoryId,
+        image_url: item.image.url,
+      })),
       page: query.page,
     };
   }
