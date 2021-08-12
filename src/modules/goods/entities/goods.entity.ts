@@ -40,7 +40,7 @@ export class Goods {
   price: number;
 
   @ApiProperty({ example: '12', description: 'Goods discount' })
-  @Column()
+  @Column({ default: 0, nullable: true })
   discount: number;
 
   @ApiProperty({ example: '12', description: 'Goods height' })

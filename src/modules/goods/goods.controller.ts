@@ -8,6 +8,8 @@ import {
   Delete,
   Query,
   UploadedFile,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { GoodsService } from './goods.service';
 import { CreateGoodsDto } from './dto/create-goods.dto';
@@ -26,14 +28,21 @@ export class GoodsController {
   @ApiResponse({ status: 201, type: Goods })
   @Post()
   @SaveFile('image', 'goods')
-  create(@UploadedFile() file, @Body() createGoodsDto: CreateGoodsDto) {
+  async create(@UploadedFile() file, @Body() createGoodsDto: CreateGoodsDto) {
     if (file) {
       createGoodsDto.image = {
         ...file,
         url: `${process.env.server_url}/${file.path}`,
       };
     }
-    return this.goodsService.create(createGoodsDto);
+    return await this.goodsService.create(createGoodsDto).catch((err) => {
+      throw new HttpException(
+        {
+          message: err.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    });
   }
 
   @ApiOperation({ summary: 'Get all goods' })
