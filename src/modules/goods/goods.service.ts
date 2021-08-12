@@ -77,6 +77,7 @@ export class GoodsService {
         length: item.length,
         categoryId: item.categoryId,
         image_url: item.image.url,
+        id: item.id,
       })),
       page: query.page,
     };
