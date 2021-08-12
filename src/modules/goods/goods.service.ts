@@ -79,7 +79,7 @@ export class GoodsService {
         image_url: item.image.url,
         id: item.id,
       })),
-      page: query.page,
+      page: Number(query.page) | 1,
     };
   }
 
