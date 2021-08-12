@@ -54,6 +54,13 @@ export class GoodsController {
 
   @ApiOperation({ summary: 'Get goods' })
   @ApiResponse({ status: 200, type: Goods })
+  @Get('public/:id/show')
+  findOnePublic(@Param('id') id: string) {
+    return this.goodsService.findOnePublic(+id);
+  }
+
+  @ApiOperation({ summary: 'Get goods' })
+  @ApiResponse({ status: 200, type: Goods })
   @Get(':id/edit')
   findOne(@Param('id') id: string) {
     return this.goodsService.findOne(+id);

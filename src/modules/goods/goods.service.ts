@@ -22,6 +22,22 @@ export class GoodsService {
     return this.repository.findOne(id);
   }
 
+  async findOnePublic(id: number): Promise<any> {
+    const item = await this.repository.findOne(id);
+    return {
+      name: item[`name_${this.localizationService.activeLanguage}`],
+      description:
+        item[`description_${this.localizationService.activeLanguage}`],
+      price: item.price,
+      discount: item.discount,
+      width: item.width,
+      height: item.height,
+      length: item.length,
+      categoryId: item.categoryId,
+      image_url: item.image.url,
+    };
+  }
+
   async findAllPublic(categoryId, query): Promise<any> {
     const take = query.per_page || 10;
     const skip = (Number(query.page) - 1) * take || 0;
@@ -54,8 +70,6 @@ export class GoodsService {
       total,
       items: result.map((item: any) => ({
         name: item[`name_${this.localizationService.activeLanguage}`],
-        description:
-          item[`description_${this.localizationService.activeLanguage}`],
         price: item.price,
         discount: item.discount,
         width: item.width,
