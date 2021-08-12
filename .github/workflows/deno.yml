@@ -29,4 +29,4 @@ jobs:
           DIST: ${{ secrets.dist }}
         run: |
           rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" -avz * $USER@$HOST:$DIST
-          ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no $USER@$HOST "supervisorctl restart nest"
+          ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no $USER@$HOST "supervisorctl restart royal"
