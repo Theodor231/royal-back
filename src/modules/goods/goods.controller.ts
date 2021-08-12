@@ -39,6 +39,7 @@ export class GoodsController {
       throw new HttpException(
         {
           message: err.message,
+          error: err,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -49,7 +50,7 @@ export class GoodsController {
   @ApiResponse({ status: 200, type: [Goods] })
   @Get()
   async findAll(@Query() query): Promise<Pagination<Goods>> {
-    return this.goodsService.findAll(query);
+    return await this.goodsService.findAll(query);
   }
   @ApiOperation({ summary: 'Get all goods' })
   @ApiResponse({ status: 200, type: [Goods] })
@@ -65,14 +66,30 @@ export class GoodsController {
   @ApiResponse({ status: 200, type: Goods })
   @Get('public/:id/show')
   findOnePublic(@Param('id') id: string) {
-    return this.goodsService.findOnePublic(+id);
+    return this.goodsService.findOnePublic(+id).catch((err) => {
+      throw new HttpException(
+        {
+          message: err.message,
+          error: err,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    });
   }
 
   @ApiOperation({ summary: 'Get goods' })
   @ApiResponse({ status: 200, type: Goods })
   @Get(':id/edit')
   findOne(@Param('id') id: string) {
-    return this.goodsService.findOne(+id);
+    return this.goodsService.findOne(+id).catch((err) => {
+      throw new HttpException(
+        {
+          message: err.message,
+          error: err,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    });
   }
 
   @ApiOperation({ summary: 'Update goods' })
@@ -90,13 +107,29 @@ export class GoodsController {
         url: `${process.env.server_url}/${file.path}`,
       };
     }
-    return this.goodsService.update(+id, updateGoodsDto);
+    return this.goodsService.update(+id, updateGoodsDto).catch((err) => {
+      throw new HttpException(
+        {
+          message: err.message,
+          error: err,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    });
   }
 
   @ApiOperation({ summary: 'Remove goods' })
   @ApiResponse({ status: 200, type: Goods })
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.goodsService.remove(+id);
+    return this.goodsService.remove(+id).catch((err) => {
+      throw new HttpException(
+        {
+          message: err.message,
+          error: err,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    });
   }
 }
