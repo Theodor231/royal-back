@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,15 +12,23 @@ export class UsersService {
     @InjectRepository(User)
     private repository: Repository<User>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    const user = this.repository.create(createUserDto);
-    return this.repository.save(user);
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const user = await this.repository.create(createUserDto);
+      return await this.repository.save(user);
+    } catch (e) {
+      throw e;
+    }
   }
 
   async findOne(id: number) {
-    const user = await this.repository.findOne(id);
-    delete user.password;
-    return user;
+    try {
+      const user = await this.repository.findOneOrFail(id);
+      delete user.password;
+      return user;
+    } catch (e) {
+      throw new NotFoundException(e);
+    }
   }
 
   async findAll(query): Promise<any> {
@@ -34,18 +42,17 @@ export class UsersService {
       where.name = ILike(`%${filter.name.toLowerCase()}%`);
     }
 
-    if (filter.roleId) {
-      where.roleId = filter.roleId;
-    }
-
     if (filter.email) {
       where.email = ILike(`%${filter.email.toLowerCase()}%`);
+    }
+
+    if (filter.roleId) {
+      where.roleId = filter.roleId;
     }
 
     const [result, total] = await this.repository.findAndCount({
       take: take,
       skip: skip,
-      where,
     });
 
     const headers = [
@@ -65,23 +72,31 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const item: any = await this.repository.findOne(+id);
-    if (item.avatar) {
-      await deleteFile(item.avatar.path);
+    try {
+      const item: any = await this.repository.findOne(+id);
+      if (item.avatar) {
+        await deleteFile(item.avatar.path);
+      }
+      await this.repository.update(
+        +id,
+        JSON.parse(JSON.stringify(updateUserDto)),
+      );
+      return this.repository.findOne(id);
+    } catch (e) {
+      throw new NotFoundException(e);
     }
-    await this.repository.update(
-      +id,
-      JSON.parse(JSON.stringify(updateUserDto)),
-    );
-    return this.repository.findOne(id);
   }
 
   async remove(id: number) {
-    const item: any = await this.repository.findOne(+id);
-    if (item.avatar) {
-      await deleteFile(item.avatar.path);
+    try {
+      const item: any = await this.repository.findOneOrFail(+id);
+      if (item.avatar) {
+        await deleteFile(item.avatar.path);
+      }
+      await this.repository.delete(id);
+      return true;
+    } catch (e) {
+      throw new NotFoundException(e);
     }
-    await this.repository.delete(id);
-    return true;
   }
 }

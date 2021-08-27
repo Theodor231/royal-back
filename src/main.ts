@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import * as express from 'express';
 import { join } from 'path';
 import * as bodyParser from 'body-parser';
-import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from './pipes/validation.pipe';
 import { AuthGuard } from './guards/auth.guard';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -18,23 +18,15 @@ function parseErrors(validationErrors: Array<any>) {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: '*', credentials: false });
+  const app = await NestFactory.create(AppModule, {
+    logger: true,
+  });
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+  app.enableCors();
   app.use(express.static(join(process.cwd(), '../storage/')));
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: false,
-      exceptionFactory: (error) => {
-        return new UnprocessableEntityException({
-          errors: parseErrors(error),
-          message: 'Was given invalid data.',
-        });
-      },
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe());
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new AuthGuard(reflector));
 
@@ -47,6 +39,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.port, process.env.host);
+  await app.listen(3000);
 }
 bootstrap().then((r) => r);
