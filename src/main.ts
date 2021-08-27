@@ -7,16 +7,6 @@ import { ValidationPipe } from './pipes/validation.pipe';
 import { AuthGuard } from './guards/auth.guard';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-function parseErrors(validationErrors: Array<any>) {
-  const errors = {} as any;
-  for (const error of validationErrors) {
-    errors[error.property] =
-      error.constraints[Object.keys(error.constraints)[0]];
-  }
-
-  return errors;
-}
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: true,
@@ -39,6 +29,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap().then((r) => r);
