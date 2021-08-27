@@ -48,7 +48,7 @@ export class AppModule {
       .apply(SettingsMiddleware)
       .forRoutes('*')
       .apply(AuthMiddleware)
-      .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)')
+      .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)', '(.*)/public')
       .forRoutes('*');
   }
 }
