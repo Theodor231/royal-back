@@ -18,12 +18,18 @@ services:
     image: postgres:alpine
     container_name: db
     restart: always
+    volumes:
+      - postgres:/var/lib/postgres
     networks:
       - backend
     environment:
       - POSTGRES_PASSWORD=123
       - POSTGRES_DB=api
       - POSTGRES_USER=postgres
+
+volumes:
+  postgres:
+    driver: local
 
 networks:
   backend:

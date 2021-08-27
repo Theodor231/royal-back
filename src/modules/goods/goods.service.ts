@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateGoodsDto } from './dto/create-goods.dto';
 import { UpdateGoodsDto } from './dto/update-goods.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { Equal, ILike, Not, Repository } from 'typeorm';
 import { Goods } from './entities/goods.entity';
 import { LocalizationService } from '../../services/localization.service';
 
@@ -23,19 +23,36 @@ export class GoodsService {
   }
 
   async findOnePublic(id: number): Promise<any> {
-    const item = await this.repository.findOne(id);
-    return {
-      name: item[`name_${this.localizationService.activeLanguage}`],
-      description:
-        item[`description_${this.localizationService.activeLanguage}`],
-      price: item.price,
-      discount: item.discount,
-      width: item.width,
-      height: item.height,
-      length: item.length,
-      categoryId: item.categoryId,
-      image_url: item.image.url,
-    };
+    try {
+      const item = await this.repository.findOne(id);
+
+      const [items] = await this.repository.findAndCount({
+        take: 5,
+        where: { categoryId: item.categoryId, id: Not(Equal(item.id)) },
+      });
+
+      return {
+        items: items.map((el: any) => ({
+          id: el.id,
+          image_url: el.image.url,
+          name: el[`name_${this.localizationService.activeLanguage}`],
+          discount: el.discount,
+          price: el.price,
+        })),
+        name: item[`name_${this.localizationService.activeLanguage}`],
+        description:
+          item[`description_${this.localizationService.activeLanguage}`],
+        price: item.price,
+        discount: item.discount,
+        width: item.width,
+        height: item.height,
+        length: item.length,
+        categoryId: item.categoryId,
+        image_url: item.image.url,
+      };
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   async findAllPublic(categoryId, query): Promise<any> {
