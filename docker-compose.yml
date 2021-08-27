@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    environment:
+      - VIRTUAL_HOST=api.powerit.loc
+    volumes:
+      - .:/var/www/html:delegated
+    networks:
+      - backend
+      - proxy_proxy
+
+  postgres:
+    image: postgres:alpine
+    container_name: db
+    restart: always
+    networks:
+      - backend
+    environment:
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=api
+      - POSTGRES_USER=postgres
+
+networks:
+  backend:
+    driver: bridge
+  proxy_proxy:
+    external: true
