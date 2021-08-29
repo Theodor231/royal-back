@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateGoodsDto } from './dto/create-goods.dto';
 import { UpdateGoodsDto } from './dto/update-goods.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, ILike, Not, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Goods } from './entities/goods.entity';
 import { LocalizationService } from '../../services/localization.service';
 
@@ -26,19 +26,28 @@ export class GoodsService {
     try {
       const item = await this.repository.findOne(id);
 
-      const [items] = await this.repository.findAndCount({
-        take: 5,
-        where: { categoryId: item.categoryId, id: Not(Equal(item.id)) },
-      });
+      // const [items] = await this.repository.findAndCount({
+      //   take: 5,
+      //   where: { categoryId: item.categoryId, id: Not(Equal(item.id)) },
+      // });
+
+      const items = await this.repository
+        .createQueryBuilder()
+        .select([
+          `goods.name_${this.localizationService.activeLanguage}`,
+          'goods.id',
+          'goods.price',
+          'goods.discount',
+          'goods.category',
+        ])
+        .from(Goods, 'goods')
+        .where(`goods.categoryId=${item.categoryId}`)
+        .orderBy('RANDOM()')
+        .limit(5)
+        .getMany();
 
       return {
-        items: items.map((el: any) => ({
-          id: el.id,
-          image_url: el.image.url,
-          name: el[`name_${this.localizationService.activeLanguage}`],
-          discount: el.discount,
-          price: el.price,
-        })),
+        items,
         name: item[`name_${this.localizationService.activeLanguage}`],
         description:
           item[`description_${this.localizationService.activeLanguage}`],
