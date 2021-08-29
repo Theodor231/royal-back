@@ -33,7 +33,7 @@ export class GoodsService {
           'goods.id',
           'goods.price',
           'goods.discount',
-          'goods.category',
+          'goods.image',
         ])
         .from(Goods, 'goods')
         .where(`goods.categoryId=${item.categoryId}`)
