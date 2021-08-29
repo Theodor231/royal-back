@@ -26,11 +26,6 @@ export class GoodsService {
     try {
       const item = await this.repository.findOne(id);
 
-      // const [items] = await this.repository.findAndCount({
-      //   take: 5,
-      //   where: { categoryId: item.categoryId, id: Not(Equal(item.id)) },
-      // });
-
       const items = await this.repository
         .createQueryBuilder()
         .select([
@@ -47,7 +42,13 @@ export class GoodsService {
         .getMany();
 
       return {
-        items,
+        items: items.map((el: any) => {
+          el.image_url = el.image?.url || '';
+          el.name = el[`name_${this.localizationService.activeLanguage}`];
+          delete el[`name_${this.localizationService.activeLanguage}`];
+          delete el.image;
+          return el;
+        }),
         name: item[`name_${this.localizationService.activeLanguage}`],
         description:
           item[`description_${this.localizationService.activeLanguage}`],
