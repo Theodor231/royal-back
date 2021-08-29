@@ -101,28 +101,38 @@ export class GoodsService {
   }
 
   async findAll(query): Promise<any> {
-    const take = query.per_page || 10;
+    let order = { id: 1 } as any;
+    const take = Number(query.per_page) || 10;
     const skip = (Number(query.page) - 1) * take || 0;
 
     const where = {} as any;
-    const filter = JSON.parse(query.filter);
+    let filter = {} as any;
 
-    if (filter.name_ro) {
-      where.name_ro = ILike(`%${filter.name_ro.toLowerCase()}%`);
+    if (query.filter) {
+      filter = JSON.parse(query.filter);
+
+      if (filter.name_ro) {
+        where.name_ro = ILike(`%${filter.name_ro.toLowerCase()}%`);
+      }
+
+      if (filter.name_en) {
+        where.name_en = ILike(`%${filter.name_en.toLowerCase()}%`);
+      }
+
+      if (filter.name_ru) {
+        where.name_ru = ILike(`%${filter.name_ru.toLowerCase()}%`);
+      }
     }
 
-    if (filter.name_en) {
-      where.name_en = ILike(`%${filter.name_en.toLowerCase()}%`);
-    }
-
-    if (filter.name_ru) {
-      where.name_ru = ILike(`%${filter.name_ru.toLowerCase()}%`);
+    if (query.order) {
+      order = JSON.parse(query.order);
     }
 
     const [result, total] = await this.repository.findAndCount({
       take: take,
       skip: skip,
       where,
+      order,
     });
 
     const headers = [
