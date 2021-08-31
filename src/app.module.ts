@@ -14,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GoodsModule } from './modules/goods/goods.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SettingsMiddleware } from './middleware/settings.middleware';
+import { LocalizationModule } from './services/localization.module';
 
 @Module({
   imports: [
@@ -34,19 +35,17 @@ import { SettingsMiddleware } from './middleware/settings.middleware';
       },
     }),
     PermisionsModule,
-    LocalizationService,
+    LocalizationModule,
     GoodsModule,
     CategoriesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LocalizationService],
-  exports: [LocalizationService],
+  providers: [AppService],
+  exports: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(SettingsMiddleware)
-      .forRoutes('*')
       .apply(AuthMiddleware)
       .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)', '(.*)/public')
       .forRoutes('*');
