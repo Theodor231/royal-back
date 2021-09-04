@@ -8,7 +8,8 @@
   "dropSchema": false,
   "synchronize": false,
   "migrationsRun": false,
-  "logging": false,
+  "logging": true,
+  "logger": "file",
   "entities": ["dist/**/*.entity{.ts,.js}"],
   "migrations": ["dist/db/migrations/*{.ts,.js}"],
   "cli": {
