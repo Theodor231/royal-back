@@ -1,102 +1,44 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository, ILike } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
+import { LocalizationService } from '../../services/localization.service';
+import { APIModel } from '../../models/api-model.service';
 
 @Injectable()
-export class RolesService {
+export class RolesService extends APIModel {
+  headers = [
+    { value: 'id', text: 'ID', sortable: true },
+    { value: 'name', text: 'Name', sortable: true },
+    { value: 'alias', text: 'Alias', sortable: true },
+    { value: 'guard', text: 'Guard', sortable: true },
+  ] as Array<{ value: string; text: string; sortable: boolean }>;
+
+  allowedFilters = {
+    name: {
+      type: 'string',
+    },
+    alias: {
+      type: 'string',
+    },
+    guard: {
+      type: 'string',
+    },
+  } as any;
+
   constructor(
     @InjectRepository(Role)
-    private repository: Repository<Role>,
-    private connection: Connection,
-  ) {}
-
-  async create(createRoleDto: CreateRoleDto) {
-    try {
-      const role = this.repository.create(createRoleDto);
-      await this.repository.save(role);
-      return role;
-    } catch (e) {
-      throw new InternalServerErrorException(e);
-    }
+    public repository: Repository<Role>,
+    public localization: LocalizationService,
+  ) {
+    super(repository, localization);
   }
-
-  async findAll(query): Promise<any> {
-    const take = query.per_page;
-    const skip = (Number(query.page) - 1) * take || 0;
-
-    const where = {} as any;
-    const filter = JSON.parse(query.filter);
-
-    if (filter.name) {
-      where.name = ILike(`%${filter.name.toLowerCase()}%`);
-    }
-
-    if (filter.alias) {
-      where.alias = ILike(`%${filter.alias}%`);
-    }
-
-    if (filter.guard) {
-      where.guard = ILike(`%${filter.guard}%`);
-    }
-
-    const [result, total] = await this.repository.findAndCount({
-      take: take,
-      skip: skip,
-      where,
-    });
-
-    const headers = [
-      { value: 'id', text: 'ID' },
-      { value: 'name', text: 'Name ' },
-      { value: 'alias', text: 'Alias' },
-      { value: 'guard', text: 'Guard' },
-    ];
-
-    return {
-      headers,
-      total,
-      items: result,
-      page: query.page,
-    };
-  }
-
-  async findOne(id: number) {
-    try {
-      return await this.repository.findOne(+id);
-    } catch (e) {
-      throw new NotFoundException(e);
-    }
-  }
-
   async list() {
     try {
       const items = await this.repository.find();
       return items.map((item: any) => ({ value: item.id, text: item.alias }));
     } catch (e) {
       throw new InternalServerErrorException(e);
-    }
-  }
-
-  async update(id: number, updateRoleDto: UpdateRoleDto) {
-    try {
-      return await this.repository.update(id, updateRoleDto);
-    } catch (e) {
-      throw new NotFoundException(e);
-    }
-  }
-
-  async remove(id: number) {
-    try {
-      return await this.repository.delete(id);
-    } catch (e) {
-      throw new NotFoundException(e);
     }
   }
 }
