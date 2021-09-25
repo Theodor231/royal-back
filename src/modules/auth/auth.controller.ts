@@ -16,6 +16,16 @@ export class AuthController {
     return this.authService.login(body);
   }
 
+  @Post('reset_password_step_1')
+  resetPasswordStep1(@Body() body: any) {
+    return this.authService.resetPasswordStep1(body);
+  }
+
+  @Post('reset_password_step_2')
+  resetPasswordStep2(@Body() body: any) {
+    return this.authService.resetPasswordStep2(body);
+  }
+
   @Public()
   @Get('logout')
   logout() {

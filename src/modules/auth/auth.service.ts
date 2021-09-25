@@ -1,6 +1,6 @@
 import {
   Injectable,
-  InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Connection } from 'typeorm';
@@ -15,33 +15,50 @@ export class AuthService {
     try {
       const conn = this.connection.getRepository('user');
 
-      const currentUser: any = await conn.findOne({
+      const currentUser: any = await conn.findOneOrFail({
         email: user.email,
       });
 
-      if (currentUser) {
-        const isMatch = this.validatePassword(
-          user.password,
-          currentUser.password,
-        );
+      const isMatch = this.validatePassword(
+        user.password,
+        currentUser.password,
+      );
 
-        if (isMatch) {
-          const payload = { username: user.email, sub: currentUser.id };
-          delete currentUser.password;
-          const token = `Bearer ${this.jwtService.sign(payload, {
-            secret: process.env.SECRETKEY,
-          })}`;
+      if (isMatch) {
+        const payload = { username: user.email, sub: currentUser.id };
+        delete currentUser.password;
+        const token = `Bearer ${this.jwtService.sign(payload, {
+          secret: process.env.SECRETKEY,
+        })}`;
 
-          return {
-            token,
-            user: currentUser,
-          };
-        }
-      } else {
-        throw new UnauthorizedException();
+        return {
+          token,
+          user: currentUser,
+        };
       }
     } catch (e) {
-      throw new InternalServerErrorException(e);
+      throw new UnauthorizedException(e);
+    }
+  }
+
+  async resetPasswordStep1({ email }: any) {
+    try {
+      const repository = this.connection.getRepository('user');
+      await repository.findOneOrFail({ where: { email } });
+      return new Promise((resolve) => resolve({ message: 'success' }));
+      // await repository.update(user.id, { password: null });
+    } catch (e) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
+  }
+  async resetPasswordStep2({ email }: any) {
+    try {
+      const repository = this.connection.getRepository('user');
+      await repository.findOneOrFail({ where: { email } });
+      return new Promise((resolve) => resolve({ message: 'success' }));
+      // await repository.update(user.id, { password: null });
+    } catch (e) {
+      throw new NotFoundException({ message: 'User not found' });
     }
   }
 
