@@ -3,12 +3,12 @@ import { GoodsService } from './goods.service';
 import { GoodsController } from './goods.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Goods } from './entities/goods.entity';
-import { LocalizationService } from '../../services/localization.service';
+import { LocalizationModule } from 'src/services/localization.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Goods])],
+  imports: [TypeOrmModule.forFeature([Goods]), LocalizationModule],
   controllers: [GoodsController],
-  providers: [GoodsService, LocalizationService],
+  providers: [GoodsService],
   exports: [GoodsService],
 })
 export class GoodsModule {}

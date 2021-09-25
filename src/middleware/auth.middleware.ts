@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NestMiddleware,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
@@ -23,11 +24,13 @@ export class AuthMiddleware implements NestMiddleware {
         if (!decoded) {
           throw new HttpException('User not found.', HttpStatus.UNAUTHORIZED);
         }
-
-        req.user = await this.connection
-          .getRepository('user')
-          .findOne(decoded.sub);
-
+        try {
+          req.user = await this.connection
+            .getRepository('user')
+            .findOne(decoded.sub);
+        } catch (e) {
+          throw new InternalServerErrorException(e);
+        }
         if (!req.user) {
           throw new HttpException('User not found.', HttpStatus.UNAUTHORIZED);
         }

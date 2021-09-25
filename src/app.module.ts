@@ -9,19 +9,20 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { PermisionsModule } from './modules/permisions/permisions.module';
-import { PermissionsService } from './services/permissions.service';
 import { LocalizationService } from './services/localization.service';
-import { CategoriesModule } from './modules/categories/categories.module';
+import { ConfigModule } from '@nestjs/config';
 import { GoodsModule } from './modules/goods/goods.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { SettingsMiddleware } from './middleware/settings.middleware';
+import { LocalizationModule } from './services/localization.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot(),
     RolesModule,
     UsersModule,
     AuthModule,
-
     PassportModule.register({
       defaultStrategy: 'jwt',
       property: 'user',
@@ -34,21 +35,19 @@ import { SettingsMiddleware } from './middleware/settings.middleware';
       },
     }),
     PermisionsModule,
-    LocalizationService,
-    CategoriesModule,
+    LocalizationModule,
     GoodsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PermissionsService, LocalizationService],
-  exports: [LocalizationService],
+  providers: [AppService],
+  exports: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(SettingsMiddleware)
-      .forRoutes('*')
       .apply(AuthMiddleware)
-      .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)')
+      .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)', '(.*)/public')
       .forRoutes('*');
   }
 }
