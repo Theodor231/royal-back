@@ -4,6 +4,8 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { validateOrReject } from 'class-validator';
+import { ValidationException } from 'src/exceptions/validation.exception';
 import { ILike, Repository } from 'typeorm';
 import { LocalizationService } from '../services/localization.service';
 
@@ -118,5 +120,25 @@ export class APIModel {
       }
     }
     return where;
+  }
+
+  async validateRequest(payload, dto) {
+    const model = new dto()
+    for (const key in payload) {
+      model[key] = payload[key];
+    }
+
+    try {
+      await validateOrReject(model);
+    } catch (e) {
+      const messages = {} as any;
+      e.forEach((err: any) => {
+        messages[err.property] =
+          err.constraints[Object.keys(err.constraints)[0]];
+        return err;
+      });
+
+      throw new ValidationException(messages);
+    }
   }
 }

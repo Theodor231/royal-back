@@ -2,39 +2,40 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
-import { Categories } from './entities/categories.entity';
-import { LocalizationService } from '../../services/localization.service';
-import { APIModel } from 'src/models/api-model.service';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ILike, Repository } from "typeorm";
+import { Categories } from "./entities/categories.entity";
+import { LocalizationService } from "../../services/localization.service";
+import { APIModel } from "src/models/api-model.service";
+import { CreateCategoriesDto } from "./dto/create-categories.dto";
 
 @Injectable()
 export class CategoriesService extends APIModel {
   headers = [
-    { value: 'id', text: 'ID', sortable: true },
-    { value: 'name_ro', text: 'Name RO', sortable: true },
-    { value: 'name_en', text: 'Name EN', sortable: true },
-    { value: 'name_ru', text: 'Name RU', sortable: true },
-    { value: 'image', text: 'Image', sortable: false },
+    { value: "id", text: "ID", sortable: true },
+    { value: "name_ro", text: "Name RO", sortable: true },
+    { value: "name_en", text: "Name EN", sortable: true },
+    { value: "name_ru", text: "Name RU", sortable: true },
+    { value: "image", text: "Image", sortable: false },
   ] as Array<{ value: string; text: string; sortable: boolean }>;
 
   allowedFilters = {
     name_ro: {
-      type: 'string',
+      type: "string",
     },
     name_en: {
-      type: 'string',
+      type: "string",
     },
     name_ru: {
-      type: 'string',
+      type: "string",
     },
   } as any;
 
   constructor(
     @InjectRepository(Categories)
     public repository: Repository<Categories>,
-    public languageService: LocalizationService,
+    public languageService: LocalizationService
   ) {
     super(repository, languageService);
   }
@@ -50,6 +51,11 @@ export class CategoriesService extends APIModel {
     } catch (e) {
       throw new InternalServerErrorException(e);
     }
+  }
+
+  async create(payload: CreateCategoriesDto) {
+    await this.validateRequest(payload, CreateCategoriesDto);
+    return await super.create(payload);
   }
 
   async findOnePublic(id: number) {
@@ -91,11 +97,11 @@ export class CategoriesService extends APIModel {
       });
 
       const headers = [
-        { value: 'id', text: 'ID' },
-        { value: 'name_ro', text: 'Name RO' },
-        { value: 'name_en', text: 'Name EN' },
-        { value: 'name_ru', text: 'Name RU' },
-        { value: 'image', text: 'Image' },
+        { value: "id", text: "ID" },
+        { value: "name_ro", text: "Name RO" },
+        { value: "name_en", text: "Name EN" },
+        { value: "name_ru", text: "Name RU" },
+        { value: "image", text: "Image" },
       ];
 
       return {

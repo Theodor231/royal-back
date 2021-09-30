@@ -44,10 +44,10 @@ import { LocalizationModule } from './services/localization.module';
   exports: [],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)', '(.*)/public')
-      .forRoutes('*');
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer
+  //     .apply(AuthMiddleware)
+  //     .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)', '(.*)/public')
+  //     .forRoutes('*');
+  // }
 }
