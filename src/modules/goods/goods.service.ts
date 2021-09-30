@@ -1,47 +1,52 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
-import { Goods } from './entities/goods.entity';
-import { APIModel } from 'src/models/api-model.service';
-import { LocalizationService } from '../../services/localization.service';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ILike, Repository } from "typeorm";
+import { Goods } from "./entities/goods.entity";
+import { LocalizationService } from "../../services/localization.service";
+import { APIModel } from "src/models/api-model.service";
+import { CreateGoodsDto } from "./dto/create-goods.dto";
+import { UpdateGoodsDto } from "./dto/update-goods.dto";
 
 @Injectable()
 export class GoodsService extends APIModel {
   headers = [
-    { value: 'id', text: 'ID', sortable: true },
-    { value: 'name_ro', text: 'Name RO', sortable: true },
-    { value: 'name_en', text: 'Name EN', sortable: true },
-    { value: 'name_ru', text: 'Name RU', sortable: true },
-    { value: 'image', text: 'Image', sortable: true },
-    { value: 'price', text: 'Price', sortable: true },
-    { value: 'discount', text: 'Discount', sortable: true },
+    { value: "id", text: "ID", sortable: true },
+    { value: "name_ro", text: "Name RO", sortable: true },
+    { value: "name_en", text: "Name EN", sortable: true },
+    { value: "name_ru", text: "Name RU", sortable: true },
+    { value: "image", text: "Image", sortable: true },
+    { value: "price", text: "Price", sortable: true },
+    { value: "discount", text: "Discount", sortable: true },
   ] as Array<{ value: string; text: string; sortable: boolean }>;
 
   allowedFilters = {
     name_ro: {
-      type: 'string',
+      type: "string",
     },
     name_en: {
-      type: 'string',
+      type: "string",
     },
     name_ru: {
-      type: 'string',
+      type: "string",
     },
     price: {
-      type: 'string',
+      type: "string",
     },
     discount: {
-      type: 'string',
+      type: "string",
     },
   } as any;
 
   constructor(
     @InjectRepository(Goods)
     public repository: Repository<Goods>,
-    public localizationService: LocalizationService,
+    public localizationService: LocalizationService
   ) {
     super(repository, localizationService);
+    this.createDto = CreateGoodsDto;
+    this.updateDto = UpdateGoodsDto;
   }
+
   async findOnePublic(id: number): Promise<any> {
     try {
       const item = await this.repository.findOne(id);
@@ -50,20 +55,20 @@ export class GoodsService extends APIModel {
         .createQueryBuilder()
         .select([
           `goods.name_${this.localizationService.activeLanguage}`,
-          'goods.id',
-          'goods.price',
-          'goods.discount',
-          'goods.image',
+          "goods.id",
+          "goods.price",
+          "goods.discount",
+          "goods.image",
         ])
-        .from(Goods, 'goods')
+        .from(Goods, "goods")
         .where(`goods.categoryId=${item.categoryId}`)
-        .orderBy('RANDOM()')
+        .orderBy("RANDOM()")
         .limit(5)
         .getMany();
 
       return {
         items: items.map((el: any) => {
-          el.image_url = el.image?.url || '';
+          el.image_url = el.image?.url || "";
           el.name = el[`name_${this.localizationService.activeLanguage}`];
           delete el[`name_${this.localizationService.activeLanguage}`];
           delete el.image;

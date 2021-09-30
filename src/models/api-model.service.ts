@@ -3,24 +3,29 @@ import {
   InternalServerErrorException,
   NotFoundException,
   UnprocessableEntityException,
-} from '@nestjs/common';
-import { ILike, Repository } from 'typeorm';
-import { LocalizationService } from '../services/localization.service';
-import { UpdateCategoriesDto } from "../modules/categories/dto/update-categories.dto";
-import { CreateCategoriesDto } from "../modules/categories/dto/create-categories.dto";
+} from "@nestjs/common";
+import { validateOrReject } from "class-validator";
+import { ValidationException } from "src/exceptions/validation.exception";
+import { ILike, Repository } from "typeorm";
+import { LocalizationService } from "../services/localization.service";
 
 @Injectable()
 export class APIModel {
   headers = [] as Array<{ value: string; text: string }>;
   allowedFilters = {} as any;
+  createDto;
+  updateDto;
 
   constructor(
     public repository: Repository<any>,
-    public localizationService: LocalizationService,
+    public languageService: LocalizationService
   ) {}
 
-  async create(payload: CreateCategoriesDto | any) {
+  async create(payload: any) {
     try {
+      if (this.createDto) {
+        await this.validateRequest(payload, this.createDto);
+      }
       const categories = this.repository.create(payload);
       return this.repository.save(categories);
     } catch (e) {
@@ -30,9 +35,9 @@ export class APIModel {
 
   async findOne(id: number) {
     try {
-      return await this.repository.findOne(id);
+      return await this.repository.findOneOrFail(id);
     } catch (e) {
-      throw new InternalServerErrorException(e);
+      throw new NotFoundException(e);
     }
   }
 
@@ -41,7 +46,7 @@ export class APIModel {
       const items = await this.repository.find();
       return items.map((item: any) => ({
         value: item.id,
-        text: item[`name_${this.localizationService.activeLanguage}`],
+        text: item[`name_${this.languageService.activeLanguage}`],
       }));
     } catch (e) {
       throw new InternalServerErrorException(e);
@@ -50,7 +55,7 @@ export class APIModel {
 
   async findOnePublic(id: number) {
     try {
-      return await this.repository.findOne(id);
+      return await this.repository.findOneOrFail(id);
     } catch (e) {
       throw new NotFoundException(e);
     }
@@ -89,6 +94,9 @@ export class APIModel {
 
   async update(id: number, payload: any) {
     try {
+      if (this.updateDto) {
+        this.validateRequest(payload, this.updateDto);
+      }
       await this.repository.findOneOrFail(+id);
       await this.repository.update(+id, JSON.parse(JSON.stringify(payload)));
       return this.repository.findOne(id);
@@ -109,17 +117,37 @@ export class APIModel {
     const where = {} as any;
     for (const key in filter) {
       if (this.allowedFilters[key]) {
-        if (this.allowedFilters[key].type === 'string') {
+        if (this.allowedFilters[key].type === "string") {
           where[key] = ILike(`%${filter[key].toLowerCase()}%`);
         }
       } else {
         throw new UnprocessableEntityException({
           message: `Filter '${key}' is not allowed. Allowed filter '${Object.keys(
-            this.allowedFilters,
+            this.allowedFilters
           ).join("', '")}'`,
         });
       }
     }
     return where;
+  }
+
+  async validateRequest(payload, dto) {
+    const model = new dto();
+    for (const key in payload) {
+      model[key] = payload[key];
+    }
+
+    try {
+      await validateOrReject(model);
+    } catch (e) {
+      const messages = {} as any;
+      e.forEach((err: any) => {
+        messages[err.property] =
+          err.constraints[Object.keys(err.constraints)[0]];
+        return err;
+      });
+
+      throw new UnprocessableEntityException({message: 'Erros ffffffffff', errors: messages});
+    }
   }
 }

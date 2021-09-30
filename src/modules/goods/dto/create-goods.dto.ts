@@ -1,8 +1,9 @@
-import { Length } from 'class-validator';
+import { IsNotEmpty, Length, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateGoodsDto {
   @ApiProperty({ example: 'name_ro', description: 'categories name ro' })
+  @IsNotEmpty()
   @Length(2, 100)
   name_ro: string;
 
@@ -21,15 +22,22 @@ export class CreateGoodsDto {
   discount: number;
 
   @ApiProperty({ example: 'price', description: 'category image' })
+  @Max(1000000)
+  @IsNotEmpty()
   price: number;
 
   @ApiProperty({ example: 'height', description: 'category image' })
+  @Max(1000)
+  @IsNotEmpty()
   height: number;
 
   @ApiProperty({ example: 'width', description: 'category image' })
+  @Max(1000)
   width: number;
 
   @ApiProperty({ example: 'length', description: 'category image' })
+  @Max(1000)
+  @IsNotEmpty()
   length: number;
 
   @Length(10, 2000)
