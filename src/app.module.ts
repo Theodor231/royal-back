@@ -9,12 +9,12 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { PermisionsModule } from './modules/permisions/permisions.module';
-import { LocalizationService } from './services/localization.service';
 import { ConfigModule } from '@nestjs/config';
 import { GoodsModule } from './modules/goods/goods.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SettingsMiddleware } from './middleware/settings.middleware';
 import { LocalizationModule } from './services/localization.module';
+import { LocalizationService } from "./services/localization.service";
 
 @Module({
   imports: [
@@ -35,12 +35,12 @@ import { LocalizationModule } from './services/localization.module';
       },
     }),
     PermisionsModule,
-    LocalizationModule,
     GoodsModule,
     CategoriesModule,
+    LocalizationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LocalizationService],
   exports: [],
 })
 export class AppModule {

@@ -6,8 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Categories } from './entities/categories.entity';
-import { LocalizationService } from '../../services/localization.service';
 import { APIModel } from 'src/models/api-model.service';
+import { LocalizationService } from '../../services/localization.service';
 
 @Injectable()
 export class CategoriesService extends APIModel {
@@ -34,9 +34,9 @@ export class CategoriesService extends APIModel {
   constructor(
     @InjectRepository(Categories)
     public repository: Repository<Categories>,
-    public languageService: LocalizationService,
+    public localizationService: LocalizationService,
   ) {
-    super(repository, languageService);
+    super(repository, localizationService);
   }
 
   async publicList() {
@@ -44,11 +44,13 @@ export class CategoriesService extends APIModel {
       const items = await this.repository.find();
       return items.map((item: any) => ({
         value: item.id,
-        text: item[`name_${this.languageService.activeLanguage}`],
+        text: item[`name_${this.localizationService.activeLanguage}`],
         image_url: item.image.url,
       }));
     } catch (e) {
-      throw new InternalServerErrorException(e);
+      console.log(e);
+      return e;
+      // throw new InternalServerErrorException(e);
     }
   }
 
@@ -103,7 +105,7 @@ export class CategoriesService extends APIModel {
         total,
         items: result.map((item: any) => ({
           id: item.id,
-          name: item[`name_${this.languageService.activeLanguage}`],
+          name: item[`name_${this.localizationService.activeLanguage}`],
           image_url: item.image.url,
         })),
         page: query.page,

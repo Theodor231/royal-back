@@ -14,6 +14,8 @@ import {
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { SaveFile } from '../helpers/decorators';
 import { Entity } from 'typeorm';
+import { CreateCategoriesDto } from "../modules/categories/dto/create-categories.dto";
+
 
 let componentOptions = {
   filePath: 'public',
@@ -26,15 +28,17 @@ let componentOptions = {
 export class ModelController {
   service;
   settings = {} as any;
+  createDto;
   constructor(service: any, settings: any) {
     this.service = service;
     componentOptions = { ...settings };
-    console.log(componentOptions.entity);
+    console.log(typeof this.createDto, this.createDto);
+    console.log(typeof componentOptions.type);
   }
 
   @Post()
   @SaveFile(componentOptions.fileKey, componentOptions.filePath)
-  async create(@Body() payload: any, @UploadedFile() file?) {
+  async create(@Body() payload: CreateCategoriesDto, @UploadedFile() file?) {
     if (file) {
       payload.image = {
         ...file,

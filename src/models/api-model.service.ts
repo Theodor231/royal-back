@@ -6,17 +6,20 @@ import {
 } from '@nestjs/common';
 import { ILike, Repository } from 'typeorm';
 import { LocalizationService } from '../services/localization.service';
+import { UpdateCategoriesDto } from "../modules/categories/dto/update-categories.dto";
+import { CreateCategoriesDto } from "../modules/categories/dto/create-categories.dto";
 
 @Injectable()
 export class APIModel {
   headers = [] as Array<{ value: string; text: string }>;
   allowedFilters = {} as any;
+
   constructor(
     public repository: Repository<any>,
-    public languageService: LocalizationService,
+    public localizationService: LocalizationService,
   ) {}
 
-  async create(payload: any) {
+  async create(payload: CreateCategoriesDto | any) {
     try {
       const categories = this.repository.create(payload);
       return this.repository.save(categories);
@@ -38,7 +41,7 @@ export class APIModel {
       const items = await this.repository.find();
       return items.map((item: any) => ({
         value: item.id,
-        text: item[`name_${this.languageService.activeLanguage}`],
+        text: item[`name_${this.localizationService.activeLanguage}`],
       }));
     } catch (e) {
       throw new InternalServerErrorException(e);

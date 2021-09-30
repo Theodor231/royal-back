@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Goods } from './entities/goods.entity';
-import { LocalizationService } from '../../services/localization.service';
 import { APIModel } from 'src/models/api-model.service';
+import { LocalizationService } from '../../services/localization.service';
 
 @Injectable()
 export class GoodsService extends APIModel {

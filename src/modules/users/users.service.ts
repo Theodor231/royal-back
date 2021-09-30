@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { LocalizationService } from '../../services/localization.service';
 import { APIModel } from 'src/models/api-model.service';
+import { LocalizationService } from '../../services/localization.service';
 
 @Injectable()
 export class UsersService extends APIModel {

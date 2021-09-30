@@ -2,8 +2,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
-import { LocalizationService } from '../../services/localization.service';
 import { APIModel } from '../../models/api-model.service';
+import { LocalizationService } from '../../services/localization.service';
 
 @Injectable()
 export class RolesService extends APIModel {
@@ -29,9 +29,9 @@ export class RolesService extends APIModel {
   constructor(
     @InjectRepository(Role)
     public repository: Repository<Role>,
-    public localization: LocalizationService,
+    localizationService: LocalizationService,
   ) {
-    super(repository, localization);
+    super(repository, localizationService);
   }
   async list() {
     try {
