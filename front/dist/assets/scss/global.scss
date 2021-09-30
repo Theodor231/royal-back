@@ -1,5 +1,5 @@
-@use 'src/assets/scss/theme.scss';
-@use 'src/assets/fonts/font-family.css';
+@use './theme.scss';
+@use '../fonts/font-family.css';
 $primary: var(--primary);
 
 .card {
@@ -168,7 +168,6 @@ $primary: var(--primary);
   width: 100%;
   overflow-x: auto;
 }
-
 
 .table-body {
   position: relative;
