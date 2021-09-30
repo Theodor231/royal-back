@@ -19,7 +19,7 @@ export class ValidationPipe implements PipeTransform<any> {
           err.constraints[Object.keys(err.constraints)[0]];
         return err;
       });
-      throw new ValidationException(messages);
+      throw new ValidationException({errors: messages});
     }
 
     return value;

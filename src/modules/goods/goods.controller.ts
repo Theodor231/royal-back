@@ -9,7 +9,7 @@ import {
 import { GoodsService } from './goods.service';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { Goods } from './entities/goods.entity';
-import { ModelController } from '../../models/model.controller';
+import { ModelController } from 'src/models/model.controller';
 
 @Controller('goods')
 export class GoodsController extends ModelController {
@@ -27,14 +27,6 @@ export class GoodsController extends ModelController {
 
   @Get('public/:id/show')
   findOnePublic(@Param('id') id: string) {
-    return this.goodsService.findOnePublic(+id).catch((err) => {
-      throw new HttpException(
-        {
-          message: err.message,
-          error: err,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    });
+    return this.goodsService.findOnePublic(+id)
   }
 }

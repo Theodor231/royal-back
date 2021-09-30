@@ -1,16 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnprocessableEntityException,
-} from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
 import { Goods } from "./entities/goods.entity";
 import { LocalizationService } from "../../services/localization.service";
 import { APIModel } from "src/models/api-model.service";
-import { validateOrReject } from "class-validator";
 import { CreateGoodsDto } from "./dto/create-goods.dto";
-import { ValidationException } from "src/exceptions/validation.exception";
+import { UpdateGoodsDto } from "./dto/update-goods.dto";
 
 @Injectable()
 export class GoodsService extends APIModel {
@@ -48,11 +43,8 @@ export class GoodsService extends APIModel {
     public localizationService: LocalizationService
   ) {
     super(repository, localizationService);
-  }
-
-  async create(payload: CreateGoodsDto) {
-    await this.validateRequest(payload, CreateGoodsDto);
-    return await super.create(payload);
+    this.createDto = CreateGoodsDto;
+    this.updateDto = UpdateGoodsDto;
   }
 
   async findOnePublic(id: number): Promise<any> {

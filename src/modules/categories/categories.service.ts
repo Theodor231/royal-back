@@ -9,6 +9,7 @@ import { Categories } from "./entities/categories.entity";
 import { LocalizationService } from "../../services/localization.service";
 import { APIModel } from "src/models/api-model.service";
 import { CreateCategoriesDto } from "./dto/create-categories.dto";
+import { UpdateCategoriesDto } from "./dto/update-categories.dto";
 
 @Injectable()
 export class CategoriesService extends APIModel {
@@ -38,6 +39,8 @@ export class CategoriesService extends APIModel {
     public languageService: LocalizationService
   ) {
     super(repository, languageService);
+    this.createDto = CreateCategoriesDto
+    this.updateDto = UpdateCategoriesDto
   }
 
   async publicList() {
@@ -53,10 +56,6 @@ export class CategoriesService extends APIModel {
     }
   }
 
-  async create(payload: CreateCategoriesDto) {
-    await this.validateRequest(payload, CreateCategoriesDto);
-    return await super.create(payload);
-  }
 
   async findOnePublic(id: number) {
     try {
