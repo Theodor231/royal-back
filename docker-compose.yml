@@ -5,53 +5,40 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api
+    container_name: "api"
     environment:
-      - VIRTUAL_HOST=api.powerit.loc
+      - VIRTUAL_HOST=api.server.loc
     volumes:
-      - .:/var/www/html:delegated
+      - ./:/var/www/html:delegated
     networks:
-      - backend
-      - proxy_proxy
-    ports:
-      - 3000:3000
-
-  client:
-    build:
-      context: './front'
-      dockerfile: Dockerfile
-    container_name: client
-    environment:
-      - VIRTUAL_HOST=client.powerit.loc
-    volumes:
-      - .:/var/www/html:delegated
-    ports:
-      - 80:80
-    networks:
-      - backend
-      - proxy_proxy
+      - web
 
   postgres:
     image: postgres:alpine
     container_name: db
-    restart: always
-    volumes:
-      - postgres:/var/lib/postgres
+    restart: unless-stopped
     networks:
-      - backend
+      - web
     environment:
       - POSTGRES_PASSWORD=123
       - POSTGRES_DB=api
       - POSTGRES_USER=postgres
-
-volumes:
-  postgres:
-    driver: local
+    ports:
+      - "5432:5432"
+  nginx-proxy:
+      image: jwilder/nginx-proxy
+      container_name: nginx-proxy
+      ports:
+        - "80:80"
+      volumes:
+        - ~/nginx/vhost.d:/etc/nginx/vhost.d:ro
+        - /var/run/docker.sock:/tmp/docker.sock:ro
+      restart: always
+      networks:
+        - web
 
 networks:
-  backend:
-    driver: bridge
-  proxy_proxy:
+  web:
     external: true
 
 

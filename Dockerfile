@@ -29,10 +29,7 @@ RUN echo "Europe/Chisinau" > /etc/timezone && \
 
 WORKDIR /var/www/html/
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 RUN mkdir -p /var/www/html && \
-    mkdir -p /var/www/html/front && \
     mkdir -p /var/cache/nginx && \
     mkdir -p /var/lib/nginx && \
     mkdir -p /var/log/nginx && \
@@ -42,16 +39,12 @@ RUN mkdir -p /var/www/html && \
     chmod -R g+rw /var/cache/nginx /var/lib/nginx /var/log/nginx
 
 
-COPY front /var/www/html/front
 COPY docker/conf/supervisord.conf /etc/supervisor/supervisord.conf
 COPY docker/conf/nginx.conf /etc/nginx/nginx.conf
-COPY docker/conf/front.conf /etc/nginx/conf.d/front.conf
 COPY docker/conf/nginx-site.conf /etc/nginx/conf.d/default.conf
 COPY docker/entrypoint.sh /sbin/entrypoint.sh
 
 COPY --chown=nginx:nginx ./ .
-
-COPY package*.json ./
 
 RUN npm install
 RUN npm run build

@@ -1,6 +1,6 @@
-import Faker from "faker";
-import { define } from "typeorm-seeding";
-import { Categories } from "../entities/categories.entity";
+import Faker from 'faker';
+import { define } from 'typeorm-seeding';
+import { Categories } from '../entities/categories.entity';
 
 define(Categories, (faker: typeof Faker) => {
   const name = faker.name.jobTitle();
@@ -10,7 +10,7 @@ define(Categories, (faker: typeof Faker) => {
   item.name_ro = `${name} RO`;
   item.name_ru = `${name} RU`;
   item.image = {
-    url: faker.image.imageUrl(500, 500, "technics", true),
+    url: 'https://picsum.photos/200',
     name: faker.name.firstName(),
   };
   return item;

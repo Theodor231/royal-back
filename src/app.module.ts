@@ -14,7 +14,8 @@ import { GoodsModule } from './modules/goods/goods.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SettingsMiddleware } from './middleware/settings.middleware';
 import { LocalizationModule } from './services/localization.module';
-import { LocalizationService } from "./services/localization.service";
+import { LocalizationService } from './services/localization.service';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 
 @Module({
   imports: [
@@ -38,16 +39,17 @@ import { LocalizationService } from "./services/localization.service";
     GoodsModule,
     CategoriesModule,
     LocalizationModule,
+    NestjsFormDataModule,
   ],
   controllers: [AppController],
   providers: [AppService, LocalizationService],
   exports: [],
 })
 export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer
-  //     .apply(AuthMiddleware)
-  //     .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)', '(.*)/public')
-  //     .forRoutes('*');
-  // }
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude('auth/(.*)', 'storage/(.*)', '(.*)/public/(.*)', '(.*)/public')
+      .forRoutes('*');
+  }
 }

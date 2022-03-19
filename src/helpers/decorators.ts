@@ -4,7 +4,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Transform } from 'class-transformer';
 
-const rootDirectory = 'storage';
+const rootDirectory = `storage`;
 
 export function SaveFile(filename: string, destination: string) {
   return applyDecorators(

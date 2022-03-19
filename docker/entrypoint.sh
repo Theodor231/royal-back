@@ -7,6 +7,8 @@ then
     cp .env.example .env
 fi
 
+npm run seed:all
+
 /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 
 exit 0

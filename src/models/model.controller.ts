@@ -8,19 +8,16 @@ import {
   Delete,
   Query,
   UploadedFile,
-  HttpException,
-  HttpStatus,
-} from "@nestjs/common";
-import { Pagination } from "nestjs-typeorm-paginate";
-import { SaveFile } from "../helpers/decorators";
-import { Entity } from "typeorm";
+} from '@nestjs/common';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { SaveFile } from '../helpers/decorators';
 
 let componentOptions = {
-  filePath: "public",
-  fileKey: "image",
+  filePath: 'public',
+  fileKey: 'image',
 } as any;
 
-@Controller("categories")
+@Controller('categories')
 export class ModelController {
   service;
   settings = {} as any;
@@ -32,13 +29,17 @@ export class ModelController {
   @Post()
   @SaveFile(componentOptions.fileKey, componentOptions.filePath)
   async create(@Body() payload: any, @UploadedFile() file?) {
-    if (file) {
-      payload.image = {
-        ...file,
-        url: `${process.env.server_url}/${file.path}`,
-      };
+    try {
+      if (file) {
+        payload.image = {
+          ...file,
+          url: `${process.env.server_url}/${file.path}`,
+        };
+      }
+      return await this.service.create(payload);
+    } catch (e) {
+      console.log(e);
     }
-    return await this.service.create(payload);
   }
 
   @Get()
@@ -46,22 +47,22 @@ export class ModelController {
     return this.service.findAll(query);
   }
 
-  @Get(":id/edit")
-  findOne(@Param("id") id: string) {
+  @Get(':id/edit')
+  findOne(@Param('id') id: string) {
     return this.service.findOne(+id);
   }
 
-  @Get("list")
+  @Get('list')
   list() {
     return this.service.list();
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @SaveFile(componentOptions.fileKey, componentOptions.filePath)
   async update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateGoodsDto: any,
-    @UploadedFile() file?
+    @UploadedFile() file?,
   ) {
     if (file) {
       updateGoodsDto.image = {
@@ -69,11 +70,12 @@ export class ModelController {
         url: `${process.env.server_url}/${file.path}`,
       };
     }
+    console.log(updateGoodsDto);
     return this.service.update(+id, updateGoodsDto);
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
+  @Delete(':id')
+  remove(@Param('id') id: string) {
     return this.service.remove(+id);
   }
 }

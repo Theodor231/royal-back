@@ -8,7 +8,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: true,
+    logger: ['error', 'warn'],
   });
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -27,6 +27,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.port);
+  const PORT = process.env.port || 3000;
+
+  console.log(`Server listen on http://localhost:${PORT}`);
+  await app.listen(PORT);
 }
 bootstrap().then((r) => r);

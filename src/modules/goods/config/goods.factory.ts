@@ -22,7 +22,7 @@ define(Goods, (faker: typeof Faker) => {
   item.categoryId = Math.floor(Math.random() * 10 + 1);
 
   item.image = {
-    url: faker.image.imageUrl(500, 500, 'technics', true),
+    url: 'https://picsum.photos/200',
     name: faker.name.firstName(),
   };
   return item;
