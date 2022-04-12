@@ -10,6 +10,7 @@ import { LocalizationService } from '../../services/localization.service';
 import { APIModel } from 'src/models/api-model.service';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
 import { UpdateCategoriesDto } from './dto/update-categories.dto';
+import { HEADERS } from './config/consts';
 
 @Injectable()
 export class CategoriesService extends APIModel {
@@ -94,13 +95,7 @@ export class CategoriesService extends APIModel {
         where,
       });
 
-      const headers = [
-        { value: 'id', text: 'ID' },
-        { value: 'name_ro', text: 'Name RO' },
-        { value: 'name_en', text: 'Name EN' },
-        { value: 'name_ru', text: 'Name RU' },
-        { value: 'image', text: 'Image' },
-      ];
+      const headers = [...HEADERS];
 
       return {
         headers,
